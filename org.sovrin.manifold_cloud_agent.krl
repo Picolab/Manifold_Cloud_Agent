@@ -1,9 +1,11 @@
 ruleset org.sovrin.manifold_cloud_agent {
   meta {
     use module org.sovrin.agent alias agent
+    use module org.sovrin.aca alias aca
     use module io.picolabs.pico_ledger alias ledger
     use module io.picolabs.subscription alias subscription
-    shares __testing, lastMessageStatus, pingStatus, getMSGs, removeMSG, retrieveMSGs, getLastMSG
+    use module io.picolabs.wrangler alias wrangler
+    shares __testing, lastMessageStatus, pingStatus, getMSGs, removeMSG, retrieveMSGs, getLastMSG, isStatic
   }
   global {
     __testing = { "queries":
@@ -87,6 +89,10 @@ ruleset org.sovrin.manifold_cloud_agent {
     currentPage = function() {
       ent:current_page
     }
+    
+    isStatic = function() {
+      wrangler:installedRulesets() >< "org.sovrin.aca.connections" => false | true
+    }
 }
 
   rule discovery {
@@ -108,8 +114,19 @@ ruleset org.sovrin.manifold_cloud_agent {
     always {
       raise wrangler event "install_rulesets_requested"
         attributes {
-          "rids": ["org.sovrin.agent", "io.picolabs.pico_ledger"]
+          "rids": ["org.sovrin.agent", "org.sovrin.aca", "io.picolabs.pico_ledger"]
         }
+    }
+  }
+  
+  rule accept_connections {
+    select when sovrin accept_connections
+    pre {
+    }
+    if isStatic() then noop()
+    always {
+      raise wrangler event "install_rulesets_requested"
+        attributes { "rids": ["org.sovrin.aca.connections"]}
     }
   }
 
