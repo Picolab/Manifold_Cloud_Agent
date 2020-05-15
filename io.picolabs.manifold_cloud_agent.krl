@@ -1,9 +1,9 @@
-ruleset org.sovrin.manifold_cloud_agent {
+ruleset io.picolabs.manifold_cloud_agent {
   meta {
-    use module org.sovrin.aca alias aca
+    use module io.picolabs.aca alias aca
     use module io.picolabs.subscription alias subscription
     use module io.picolabs.wrangler alias wrangler
-    use module org.sovrin.aca.trust_ping alias aca_ping
+    use module io.picolabs.aca.trust_ping alias aca_ping
     shares __testing, isStatic, getLabel, getConnections, canPing, getPingStatus
   }
   global {
@@ -31,12 +31,12 @@ ruleset org.sovrin.manifold_cloud_agent {
     }
     
     neededRulesets = function() {
-      options = ["org.sovrin.aca.trust_ping", "org.sovrin.aca.basicmessage"]
+      options = ["io.picolabs.aca.trust_ping", "io.picolabs.aca.basicmessage"]
       options.difference(wrangler:installedRulesets())
     }
     
     isStatic = function() {
-      wrangler:installedRulesets() >< "org.sovrin.aca.connections" => false | true
+      wrangler:installedRulesets() >< "io.picolabs.aca.connections" => false | true
     }
     
     canPing = function(their_vk) {
@@ -78,8 +78,16 @@ ruleset org.sovrin.manifold_cloud_agent {
     always {
       raise wrangler event "install_rulesets_requested"
         attributes {
-          "rids": ["org.sovrin.aca"]
+          "rids": ["io.picolabs.aca"]
         }
+    }
+  }
+  
+  rule remove_agent {
+    select when manifold uninstallapp where rid >< meta:rid
+    always {
+      raise wrangler event "uninstall_rulesets_requested"
+        attributes { "rids": ["io.picolabs.aca", "io.picolabs.aca.trust_ping","io.picolabs.aca.connections","io.picolabs.aca.basicmessage"] }
     }
   }
   
@@ -94,7 +102,7 @@ ruleset org.sovrin.manifold_cloud_agent {
     if isStatic() then noop()
     fired {
       raise wrangler event "install_rulesets_requested"
-        attributes { "rids": ["org.sovrin.aca.connections"].append(neededRulesets()) }
+        attributes { "rids": ["io.picolabs.aca.connections"].append(neededRulesets()) }
     }
   }
   
@@ -105,7 +113,7 @@ ruleset org.sovrin.manifold_cloud_agent {
     if isStatic() then noop()
     notfired {
       raise wrangler event "uninstall_rulesets_requested"
-        attributes { "rids": ["org.sovrin.aca.connections"] }
+        attributes { "rids": ["io.picolabs.aca.connections"] }
     }
   }
   
@@ -162,7 +170,7 @@ ruleset org.sovrin.manifold_cloud_agent {
       state = {"agent": aca:connections(their_key){"their_did"}}.put("tab", "2");
     }
     if not (ent:current_page{"chat"} == their_key) then
-      event:send({"eci":manifold_pico, "domain":"manifold", "type":"add_notification", "attrs":{"picoId": id, "thing":thing, "app":"Sovrin Aries Cloud Agent", "message":"You got a message from "+conn{"label"}, "ruleset":"org.sovrin.manifold_cloud_agent", "state": state}})
+      event:send({"eci":manifold_pico, "domain":"manifold", "type":"add_notification", "attrs":{"picoId": id, "thing":thing, "app":"Sovrin Aries Cloud Agent", "message":"You got a message from "+conn{"label"}, "ruleset":"io.picolabs.manifold_cloud_agent", "state": state}})
     always {
     }
   }
