@@ -28,7 +28,7 @@ ruleset io.picolabs.manifold_cloud_agent {
     }
     
     neededRulesets = function() {
-      options = ["io.picolabs.aca.trust_ping", "io.picolabs.aca.basicmessage", "s"]
+      options = ["io.picolabs.aca.trust_ping", "io.picolabs.aca.basicmessage"]
       options.difference(wrangler:installedRulesets())
     }
     
@@ -99,7 +99,7 @@ ruleset io.picolabs.manifold_cloud_agent {
     if isStatic() then noop()
     fired {
       raise wrangler event "install_rulesets_requested"
-        attributes { "rids": ["io.picolabs.aca.connections"].append(neededRulesets()) }
+        attributes { "rids": ["s","io.picolabs.aca.connections"].append(neededRulesets()) }
     }
   }
   
