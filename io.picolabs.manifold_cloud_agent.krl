@@ -28,7 +28,7 @@ ruleset io.picolabs.manifold_cloud_agent {
     }
     
     neededRulesets = function() {
-      options = ["io.picolabs.aca.trust_ping", "io.picolabs.aca.basicmessage"]
+      options = ["io.picolabs.aca.trust_ping", "io.picolabs.aca.basicmessage", "s"]
       options.difference(wrangler:installedRulesets())
     }
     
@@ -84,7 +84,7 @@ ruleset io.picolabs.manifold_cloud_agent {
     select when manifold uninstallapp where rid >< meta:rid
     always {
       raise wrangler event "uninstall_rulesets_requested"
-        attributes { "rids": ["io.picolabs.aca", "io.picolabs.aca.trust_ping","io.picolabs.aca.connections","io.picolabs.aca.basicmessage"] }
+        attributes { "rids": ["io.picolabs.aca", "io.picolabs.aca.trust_ping","io.picolabs.aca.connections","io.picolabs.aca.basicmessage", "s"] }
     }
   }
   
