@@ -50,6 +50,11 @@ ruleset io.picolabs.manifold_cloud_agent {
     
     getConnections = function() {
       aca:connections()
+// begin patch for https://github.com/Picolab/Manifold_Cloud_Agent/issues/1
+        .map(function(c){
+          c.get("their_endpoint") => c | c.put("their_endpoint","https://example.com/dummy_endpoint/")
+        })
+// end patch remove upon resolution of https://github.com/Picolab/Manifold/issues/195
     }
     
     getPingStatus = function() {
